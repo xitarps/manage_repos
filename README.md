@@ -11,6 +11,10 @@ Portanto, você pode tornar essa tarefa mais fácil.
 * obs: Depends on rvm, also repositories ruby versions must be already installed (ex: rvm install 3.0.0)
 * obs: Depende do rvm, também as versões do ruby ​​dos repositórios devem estar instaladas (ex: rvm install 3.0.0)
 
+[Need help to install rvm?](https://rvm.io/rvm/install)
+
+[Precisa de ajuda para instalar o rvm?](https://rvm.io/rvm/install)
+
 ## How To Use / Como utilizar
 
 ```
