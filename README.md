@@ -8,6 +8,9 @@ Este pequeno script foi criado para facilitar o download e a configuração dos 
 ex: se você tiver que revisar alguns códigos de candidato para um processo de seleção de trabalho (criar diretórios, git clone, bundle install e outras coisas).
 Portanto, você pode tornar essa tarefa mais fácil.
 
+* obs: Depends on rvm, also repositories ruby versions must be already installed (ex: rvm install 3.0.0)
+* obs: Depende do rvm, também as versões do ruby ​​dos repositórios devem estar instaladas (ex: rvm install 3.0.0)
+
 ## How To Use / Como utilizar
 
 ```
