@@ -44,4 +44,4 @@ Portanto, você pode tornar essa tarefa mais fácil.
  - Em seguida, siga as instruções do terminal (conforme suas necessidades pedirem)
 
 ### Screenshot:
-!["img"](./imgs/Screenshot.png)
+!["img"](./imgs/Screenshot_no_cursor.png)
