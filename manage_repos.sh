@@ -146,14 +146,14 @@ config_one_rails_project(){
     echo -e "\nConfigurando projeto de...\n"
     echo ">>> $owner"
     echo -e "\n\nProjeto: \n"
-    echo $owner_path | cut -d '/' -f 9
+    echo $owner_path | rev | cut -d '/' -f 1 | rev
     sleep 2
     
     current_path=$PWD
-    echo "Currentpath $PWD"
-    sleep 7
-    current_repo=$(echo $owner_path | cut -d '/' -f 9)
-    
+    echo -e "\nCurrentpath: $PWD"
+    sleep 4
+    current_repo=$(echo $owner_path | rev | cut -d '/' -f 1 | rev)
+    sleep 10
     cd $current_path/repos/$owner/$current_repo
     
     # get output from bundle
