@@ -1,11 +1,11 @@
 # Manage_repos
 
 This little script is meant to make easy to download and configure rails repos.
-ex: If you have to review some candidate's codes for a job select process(make directories,git clone, bundle install and stuff).
+ex: If you have to review some candidates codes for a job select process(make directories,git clone, bundle install and stuff).
 So you can make this task easier.
 
 Este pequeno script foi criado para facilitar o download e a configuração dos repositórios do Rails.
-ex: se você tiver que revisar alguns códigos de candidato para um processo de seleção de trabalho (criar diretórios, git clone, bundle install e outras coisas).
+ex: se você tiver que revisar alguns códigos de candidatos para um processo de seleção de trabalho (criar diretórios, git clone, bundle install e outras coisas).
 Portanto, você pode tornar essa tarefa mais fácil.
 
 * obs: Depends on rvm, also repositories ruby versions must be already installed (ex: rvm install 3.0.0)
