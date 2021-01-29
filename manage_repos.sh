@@ -364,7 +364,7 @@ run_rails_server(){
     rbv=$(bundle install 2>&1 1>&3)  # Run command.  stderr is captured.
     exec 3>&-                    # Close FD #3.
   
-    sleep 2
+    #sleep 2
     
     STR="$rbv"
     SUB="Your Ruby version"
@@ -399,8 +399,8 @@ run_rails_server(){
     echo -e "now using:\n"
     rvm list
     echo ""
-    sleep 3
-    rails s 
+    sleep 2
+    rails s -b 0.0.0.0
 
 
 
