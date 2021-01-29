@@ -134,6 +134,85 @@ config_rails_projects(){
     sleep 2
 }
 
+config_one_rails_project(){
+    input_filename='repo_list.txt'
+    n=1
+    owner="nil"
+    current_repo="nil"
+    clear
+    owner=$1
+    owner_path=$2
+    
+    echo -e "\nConfigurando projeto de...\n"
+    echo ">>> $owner"
+    echo -e "\n\nProjeto: \n"
+    echo $owner_path | cut -d '/' -f 9
+    sleep 2
+    
+    current_path=$PWD
+    echo "Currentpath $PWD"
+    sleep 7
+    current_repo=$(echo $owner_path | cut -d '/' -f 9)
+    
+    cd $current_path/repos/$owner/$current_repo
+    
+    # get output from bundle
+    exec 3>&1                    # Save the place that stdout (1) points to.
+    rbv=$(bundle install 2>&1 1>&3)  # Run command.  stderr is captured.
+    exec 3>&-                    # Close FD #3.
+  
+    #echo "rbv: $rbv"
+    
+    sleep 2
+    
+    STR="$rbv"
+    SUB="Your Ruby version"
+    if [[ "$STR" == *"$SUB"* ]]; then 
+    
+        rbv=$(echo "${rbv: -6}")
+        echo "different versions of ruby..."
+        echo "now using: $rbv"
+        sleep 3
+        # Load RVM into a shell session *as a function*
+        if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
+
+            # First try to load from a user install
+            source "$HOME/.rvm/scripts/rvm"
+
+        elif [[ -s "/usr/local/rvm/scripts/rvm" ]] ; then
+
+            # Then try to load from a root install
+            source "/usr/local/rvm/scripts/rvm"
+
+        elif [[ -s "/usr/share/rvm/scripts/rvm" ]] ; then
+
+            # Then try to load from a root install
+            source "/usr/share/rvm/scripts/rvm"
+
+        else
+
+            printf "ERROR: An RVM installation was not found.\n"
+        fi &&
+        
+        rvm use $rbv
+        bundle install
+        
+        echo -e "\n -->>>>>>>>>Errors Solved on $owner / ruby version\n\n"; 
+        
+    else 
+        echo -e "\n -->>>>>>>>>No Errors on $owner\n\n"
+    fi
+    sleep 2
+    
+    yarn install && rails db:migrate && rails db:seed
+        
+
+    cd $current_path/
+    echo -e "\nO repositorio local foi configurado."
+    echo -e "\n...\n\n\n\n\n"
+    sleep 2
+}
+
 git_pull_repos(){
     input_filename='repo_list.txt'
     n=0
@@ -158,6 +237,9 @@ git_pull_repos(){
         git pull
         echo -e "\n----------\n"
     done < $input_filename
+    sleep 2
+    cd $current_path/
+    config_rails_projects &&
     sleep 3
     clear
     echo -e "\n Os repositorios locais foram atualizados(caso tivessem alterações)"
@@ -207,10 +289,17 @@ git_pull_single_repo(){
     echo -e "\nAtualizando o repo de:\n\n"
     printf ' >>>     %s\n' "${owners[(($repo_escolhido-1))]}     <<<"
     echo ""
-    # printf '%s\n' "${owners_paths[(($repo_escolhido-1))]}"
+    printf '%s\n' "${owners_paths[(($repo_escolhido-1))]}"
     cd "${owners_paths[(($repo_escolhido-1))]}"
     echo ""
     git pull
+    sleep 2
+    cd $current_path/
+    user_proj="${owners[(($repo_escolhido-1))]}"
+    caminho_proj="${owners_paths[(($repo_escolhido-1))]}"
+    # echo $caminho_proj
+    # sleep 10
+    config_one_rails_project $user_proj $caminho_proj
     echo -e "\nO repositorio local foi atualizado(caso tivessem alterações)"
     cd $current_path/
     sleep 4
@@ -229,9 +318,8 @@ run_rails_server(){
     owner="nil"
     current_repo="nil"
     clear
-    echo -e "\nGit pull de repo específico...\n"
-    sleep 2
-    
+    echo -e "\nRun Rails server...\n"
+
     owners=()
     owners_paths=()
     
@@ -262,7 +350,7 @@ run_rails_server(){
     echo ""
     read -p 'Rodar Rails Server de qual projeto?(digite apenas o numero):' repo_escolhido
 
-    echo -e "\Inicializando rails server do projeto de:\n\n"
+    echo -e "\nInicializando rails server do projeto de:\n\n"
     printf ' >>>     %s\n' "${owners[(($repo_escolhido-1))]}     <<<"
     echo ""
     # printf '%s\n' "${owners_paths[(($repo_escolhido-1))]}"
@@ -284,44 +372,59 @@ run_rails_server(){
     
         rbv=$(echo "${rbv: -6}")
         echo "different versions of ruby..."
-        echo "now using: $rbv"
+        
+        # Load RVM into a shell session *as a function*
+        if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
+
+            # First try to load from a user install
+            source "$HOME/.rvm/scripts/rvm"
+
+        elif [[ -s "/usr/local/rvm/scripts/rvm" ]] ; then
+
+            # Then try to load from a root install
+            source "/usr/local/rvm/scripts/rvm"
+
+        elif [[ -s "/usr/share/rvm/scripts/rvm" ]] ; then
+
+            # Then try to load from a root install
+            source "/usr/share/rvm/scripts/rvm"
+
+        else
+
+            printf "ERROR: An RVM installation was not found.\n"
+        fi
+        rvm use $rbv
     fi
-    # Load RVM into a shell session *as a function*
-    if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
-
-        # First try to load from a user install
-        source "$HOME/.rvm/scripts/rvm"
-
-    elif [[ -s "/usr/local/rvm/scripts/rvm" ]] ; then
-
-        # Then try to load from a root install
-        source "/usr/local/rvm/scripts/rvm"
-
-    elif [[ -s "/usr/share/rvm/scripts/rvm" ]] ; then
-
-        # Then try to load from a root install
-        source "/usr/share/rvm/scripts/rvm"
-
-    else
-
-        printf "ERROR: An RVM installation was not found.\n"
-    fi &&
-    rvm use $rbv
-
+    
+    echo -e "now using:\n"
+    rvm list
+    echo ""
+    sleep 3
     rails s 
 
 
 
     echo -e "\n\nRetornando ao menu..."
     cd $current_path/
-    sleep 4
+    sleep 2
     clear
+}
+logo(){
+echo '                                                                   '
+echo ' _ __ ___   __ _ _ __   __ _  __ _  ___   _ __ ___ _ __   ___  ___ '
+echo '| `_ ` _ \ / _` | `_ \ / _` |/ _` |/ _ \ | `_| __ \ `_ \ / _ \/ __|'
+echo '| | | | | | (_| | | | | (_| | (_| |  __/ | | |  __/ |_) | (_) \__ \'
+echo '|_| |_| |_|\__,_|_| |_|\__,_|\__, |\___| |_|  \___| .__/ \___/|___/'
+echo '                             |___/                |_|              '
+echo ''
+#thanks to figlet - http://www.figlet.org/ - ftp://ftp.figlet.org/pub/figlet/program/unix/figlet-2.2.5.tar.gz
 }
 
 menu_choice=1
 clear
 while (($menu_choice != 0)) ; do
-    
+    logo
+    echo -e "\nManage repos by: Xita rps\n\nhttps://github.com/xitarps\n\n"
     echo "Menu:"
     echo -e "\n0 - Exit / Sair "
     echo -e "\n1 - Create folders for repos/ Criar pastas para os repositorios"
