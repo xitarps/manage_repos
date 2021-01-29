@@ -216,10 +216,106 @@ git_pull_single_repo(){
     sleep 4
     clear
 }
+
 full_get_repos(){
     create_dirs &&
     clone_git_repos &&
     config_rails_projects
+}
+
+run_rails_server(){
+    input_filename='repo_list.txt'
+    n=1
+    owner="nil"
+    current_repo="nil"
+    clear
+    echo -e "\nGit pull de repo específico...\n"
+    sleep 2
+    
+    owners=()
+    owners_paths=()
+    
+    current_path=$PWD
+    while IFS= read -r line; do
+        # reading each line
+        #echo "Line No. $n : $line"
+        owner=$(echo $line | cut -d '/' -f 4)
+        current_repo=$(echo $line | cut -d '/' -f 5)
+        #echo "Endereço: $line"
+        echo "$n - $owner"
+        #owners[$(($n-1))]="$owner"
+        #owners_paths[$(($n-1))]="$current_path/repos/$owner/$current_repo"
+        
+        owners+=("$owner")
+        owners_paths+=("$current_path/repos/$owner/$current_repo")
+        n=$(($n+1))
+        #echo "Current repo: $current_repo"
+        #echo
+        
+        #cd $current_path/repos/$owner/$current_repo
+        #git pull
+        #echo -e "\n----------\n"
+    done < $input_filename
+    #clear
+    #printf '%s\n' "${owners[@]}"
+    #printf '%s\n' "${owners_paths[@]}"
+    echo ""
+    read -p 'Rodar Rails Server de qual projeto?(digite apenas o numero):' repo_escolhido
+
+    echo -e "\Inicializando rails server do projeto de:\n\n"
+    printf ' >>>     %s\n' "${owners[(($repo_escolhido-1))]}     <<<"
+    echo ""
+    # printf '%s\n' "${owners_paths[(($repo_escolhido-1))]}"
+    cd "${owners_paths[(($repo_escolhido-1))]}"
+    echo ""
+
+
+
+    # get output from bundle
+    exec 3>&1                    # Save the place that stdout (1) points to.
+    rbv=$(bundle install 2>&1 1>&3)  # Run command.  stderr is captured.
+    exec 3>&-                    # Close FD #3.
+  
+    sleep 2
+    
+    STR="$rbv"
+    SUB="Your Ruby version"
+    if [[ "$STR" == *"$SUB"* ]]; then 
+    
+        rbv=$(echo "${rbv: -6}")
+        echo "different versions of ruby..."
+        echo "now using: $rbv"
+    fi
+    # Load RVM into a shell session *as a function*
+    if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
+
+        # First try to load from a user install
+        source "$HOME/.rvm/scripts/rvm"
+
+    elif [[ -s "/usr/local/rvm/scripts/rvm" ]] ; then
+
+        # Then try to load from a root install
+        source "/usr/local/rvm/scripts/rvm"
+
+    elif [[ -s "/usr/share/rvm/scripts/rvm" ]] ; then
+
+        # Then try to load from a root install
+        source "/usr/share/rvm/scripts/rvm"
+
+    else
+
+        printf "ERROR: An RVM installation was not found.\n"
+    fi &&
+    rvm use $rbv
+
+    rails s 
+
+
+
+    echo -e "\n\nRetornando ao menu..."
+    cd $current_path/
+    sleep 4
+    clear
 }
 
 menu_choice=1
@@ -227,13 +323,14 @@ clear
 while (($menu_choice != 0)) ; do
     
     echo "Menu:"
-    echo -e "\n0 - Finalizar este programa"
-    echo -e "\n1 - Criar pastas para os repositorios em ./repos"
-    echo -e "\n2 - Clonar repositorios git"
-    echo -e "\n3 - Configurar projetos rails(caso não tenham sido já configurados/bundle install etc)"
-    echo -e "\n4 - Criar, clonar e configurar repos automaticamente"
-    echo -e "\n5 - Git pull em todos os repos"
-    echo -e "\n6 - Git pull em repo especifico"
+    echo -e "\n0 - Exit / Sair "
+    echo -e "\n1 - Create folders for repos/ Criar pastas para os repositorios"
+    echo -e "\n2 - Clone git repos / Clonar repositorios git"
+    echo -e "\n3 - Configure rails projects / Configurar projetos rails(ex: bundle install etc)"
+    echo -e "\n4 - Create, Clone, Configure / Criar, clonar e configurar"
+    echo -e "\n5 - Git pull in all repos / Git pull em todos os repos"
+    echo -e "\n6 - Git pull in only one repo / Git pull em um único repo"
+    echo -e "\n7 - Rails server of a project / Rails server de um projeto"
     echo ""
     read -p 'Digite sua escolha:' escolhido
     
@@ -245,7 +342,7 @@ while (($menu_choice != 0)) ; do
         4) full_get_repos ;;
         5) git_pull_repos ;;
         6) git_pull_single_repo ;;
-        7) echo "sete" ;;
+        7) run_rails_server ;;
         8) echo "oito" ;;
         9) echo "nove" ;;
         10) echo "dez" ;;
