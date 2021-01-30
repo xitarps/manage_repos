@@ -37,7 +37,7 @@ Portanto, você pode tornar essa tarefa mais fácil.
  
  Run / Execute:
  ```
-    $ ./manage_repos
+    $ ./manage_repos.sh
  ```
  
  - Then follow the instructions of the terminal(as your's needs asks)
