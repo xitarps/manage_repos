@@ -404,7 +404,7 @@ run_rails_server(){
 
 
     echo -e "\n\nRemovendo alterações( git restore . )..."
-    git restore
+    git restore . 
 
     echo -e "\n\nRetornando ao menu..."
     cd $current_path/
