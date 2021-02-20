@@ -403,6 +403,8 @@ run_rails_server(){
     rails s -b 0.0.0.0
 
 
+    echo -e "\n\nRemovendo alterações( git restore . )..."
+    git restore
 
     echo -e "\n\nRetornando ao menu..."
     cd $current_path/
